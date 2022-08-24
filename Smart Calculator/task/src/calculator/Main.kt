@@ -1,6 +1,27 @@
 package calculator
 
 fun main() {
-    val (firstInt, secondInt) = readln().split(' ').map { it.toInt() }
-    println(firstInt + secondInt)
+    sumOfTwoIntegers()
+}
+
+fun sumOfTwoIntegers() {
+    val userInput = readln()
+    when {
+        userInput.isEmpty() -> sumOfTwoIntegers()
+        !userInput.contains(' ') -> {
+            try {
+                println(userInput.toInt())
+                sumOfTwoIntegers()
+            } catch (e: Exception) {
+                if (userInput == "/exit") {
+                    println("Bye!")
+                    return
+                } else sumOfTwoIntegers()
+            }
+        } else -> {
+            val (firstInteger, secondInteger) = userInput.split(' ').map {it.toLong()}
+        println(firstInteger + secondInteger)
+        sumOfTwoIntegers()
+        }
+    }
 }
