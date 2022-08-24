@@ -3,31 +3,27 @@ package calculator
 import kotlin.system.exitProcess
 
 fun main() {
-    sumOfIntegers()
+    sumOfIntegersModulus()
 }
 
-fun sumOfIntegers() {
+fun sumOfIntegersModulus() {
     val userInput = readln()
     when {
-        userInput.isEmpty() -> sumOfIntegers()
+        userInput.isEmpty() -> sumOfIntegersModulus()
         !userInput.contains(' ') -> printOnlyIntegerInfoOrTerminate(userInput)
-        else -> {
-            val (firstInteger, secondInteger) = userInput.split(' ').map {it.toLong()}
-        println(firstInteger + secondInteger)
-        sumOfIntegers()
-        }
+        else -> sumOfIntegers(userInput)
     }
 }
 
 fun printOnlyIntegerInfoOrTerminate(input: String) {
     try {
-        println(input.toInt())
-        sumOfIntegers()
+        println(input.toLong())
+        sumOfIntegersModulus()
     } catch (e: Exception) {
         when (input) {
             "/exit" -> exit()
             "/help" -> help()
-            else -> sumOfIntegers()
+            else -> sumOfIntegersModulus()
         }
     }
 }
@@ -39,5 +35,11 @@ fun exit() {
 
 fun help() {
     println("The program calculates the sum of numbers")
-    sumOfIntegers()
+    sumOfIntegersModulus()
+}
+
+fun sumOfIntegers(input: String) {
+    val listOfIntegers = input.split(' ').map {it.toLong()}.toList()
+    println(listOfIntegers.sum())
+    sumOfIntegersModulus()
 }
