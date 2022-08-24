@@ -7,24 +7,11 @@ fun main() {
 }
 
 fun sumOfIntegersModulus() {
-    val userInput = readln()
-    when {
-        userInput.isEmpty() -> sumOfIntegersModulus()
-        !userInput.contains(' ') -> printOnlyIntegerInfoOrTerminate(userInput)
+    when (val userInput = readln()){
+        "" -> sumOfIntegersModulus()
+        "/exit" -> exit()
+        "/help" -> help()
         else -> sumOfIntegers(userInput)
-    }
-}
-
-fun printOnlyIntegerInfoOrTerminate(input: String) {
-    try {
-        println(input.toLong())
-        sumOfIntegersModulus()
-    } catch (e: Exception) {
-        when (input) {
-            "/exit" -> exit()
-            "/help" -> help()
-            else -> sumOfIntegersModulus()
-        }
     }
 }
 
@@ -39,7 +26,7 @@ fun help() {
 }
 
 fun sumOfIntegers(input: String) {
-    val listOfIntegers = input.split(' ').map {it.toLong()}.toList()
+    val listOfIntegers = input.split(" ").map {it.toLong()}.toList()
     println(listOfIntegers.sum())
     sumOfIntegersModulus()
 }
