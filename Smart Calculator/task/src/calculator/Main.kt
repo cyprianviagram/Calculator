@@ -1,27 +1,43 @@
 package calculator
 
+import kotlin.system.exitProcess
+
 fun main() {
-    sumOfTwoIntegers()
+    sumOfIntegers()
 }
 
-fun sumOfTwoIntegers() {
+fun sumOfIntegers() {
     val userInput = readln()
     when {
-        userInput.isEmpty() -> sumOfTwoIntegers()
-        !userInput.contains(' ') -> {
-            try {
-                println(userInput.toInt())
-                sumOfTwoIntegers()
-            } catch (e: Exception) {
-                if (userInput == "/exit") {
-                    println("Bye!")
-                    return
-                } else sumOfTwoIntegers()
-            }
-        } else -> {
+        userInput.isEmpty() -> sumOfIntegers()
+        !userInput.contains(' ') -> printOnlyIntegerInfoOrTerminate(userInput)
+        else -> {
             val (firstInteger, secondInteger) = userInput.split(' ').map {it.toLong()}
         println(firstInteger + secondInteger)
-        sumOfTwoIntegers()
+        sumOfIntegers()
         }
     }
+}
+
+fun printOnlyIntegerInfoOrTerminate(input: String) {
+    try {
+        println(input.toInt())
+        sumOfIntegers()
+    } catch (e: Exception) {
+        when (input) {
+            "/exit" -> exit()
+            "/help" -> help()
+            else -> sumOfIntegers()
+        }
+    }
+}
+
+fun exit() {
+    println("Bye!")
+    exitProcess(0)
+}
+
+fun help() {
+    println("The program calculates the sum of numbers")
+    sumOfIntegers()
 }
