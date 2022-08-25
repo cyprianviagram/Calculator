@@ -58,8 +58,15 @@ fun exit() {
 
 fun help() {
     println("""
-        The program calculates a sum and a subtraction of numbers. It supports binary, unary and multiplied operators
-        "/exit" to terminate the program
+        The program calculates a sum and a subtraction of numbers. 
+        Enter two or more numbers with either plus operator (" + ") or minus operator (" - ") between the numbers with spaces before and after the operator.
+            Example: "3 + 5 - 4 + 1"
+            Two or any even number of minus operators will result in addition ( " -- " equals " + " ). An odd number of minus operators will result in subtraction.
+            Example: "2 -- 2" is equal to "2 + 2" and result will be "4"
+            For negative numbers do not put space after minus sign.
+            Example: "-2 + -5"
+            Enter /help to display these instructions.
+            Enter /exit to quit program.
         """.trimIndent())
     calculator()
 }
