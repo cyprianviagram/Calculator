@@ -24,15 +24,7 @@ fun sumOrSubtractionOfIntegers(input: String) {
             input.substringBefore(" +").trim().toLong()
         } else input.substringBefore(" -").trim().toLong()
 
-        val processedInput = input.replace(
-            "\\s+".toRegex(), ""
-        ).replace(
-            "--".toRegex(), "+"
-        ).replace(
-            "[+]+".toRegex(), "+"
-        ).replace(
-            "[+]-+".toRegex(), "-"
-        ).replace(result.toString(), "")
+        val processedInput = inputProcessor(input).replace(result.toString(), "")
 
         val listOfOperators = "[+]|-".toRegex().findAll(processedInput).map { it.value }.toList()
         val processedInputWithoutOperator = processedInput.replace("[+]|-".toRegex(), " ").trim()
@@ -48,6 +40,16 @@ fun sumOrSubtractionOfIntegers(input: String) {
     calculator()
 }
 
+fun inputProcessor (input: String): String {
+    return input.replace(
+        "\\s+".toRegex(), ""
+    ).replace(
+        "--".toRegex(), "+"
+    ).replace(
+        "[+]+".toRegex(), "+"
+    ).replace(
+        "[+]-+".toRegex(), "-")
+}
 
 fun exit() {
     println("Bye!")
