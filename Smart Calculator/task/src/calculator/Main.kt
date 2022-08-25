@@ -16,17 +16,35 @@ fun calculator() {
 }
 
 fun sumOrSubtractionOfIntegers(input: String) {
-    val listOfIntegers: List<Long> = input.split("\\s+[+]+\\s+|\\s+-+\\s+".toRegex()).map {it.toLong()}.toList()
-    val listOfOperators = "[+]+|-+".toRegex().findAll(input).map { it.value }.toList()
-    var result = listOfIntegers[0]
-    val droppedListOfIntegers = listOfIntegers.drop(1)
-    droppedListOfIntegers.forEach loop@{i ->
-        val indexOfI = droppedListOfIntegers.indexOf(i)
-        if (listOfOperators[indexOfI].contains("+") || listOfOperators[indexOfI].contains("--")) {
-            result += i
-        } else result -= i
+    try {
+        input.trim().toLong()
+        println(input.trim())
+    } catch (e: Exception) {
+        var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
+            input.substringBefore(" +").trim().toLong()
+        } else input.substringBefore(" -").trim().toLong()
+
+        val processedInput = input.replace(
+            "\\s+".toRegex(), ""
+        ).replace(
+            "--".toRegex(), "+"
+        ).replace(
+            "[+]+".toRegex(), "+"
+        ).replace(
+            "[+]-+".toRegex(), "-"
+        ).replace(result.toString(), "")
+
+        val listOfOperators = "[+]|-".toRegex().findAll(processedInput).map { it.value }.toList()
+        val processedInputWithoutOperator = processedInput.replace("[+]|-".toRegex(), " ").trim()
+        val listOfIntegers: List<Long> = processedInputWithoutOperator.split(" ").map { it.toLong() }.toList()
+
+        var counter = 0
+        listOfIntegers.forEach {
+            if (listOfOperators[counter] == "+") result += it else result -= it
+            counter++
+        }
+        println(result)
     }
-    println(result)
     calculator()
 }
 
@@ -37,6 +55,9 @@ fun exit() {
 }
 
 fun help() {
-    println("The program calculates the sum of numbers")
+    println("""
+        The program calculates a sum and a subtraction of numbers. It supports binary, unary and multiplied operators
+        "/exit" to terminate the program
+        """.trimIndent())
     calculator()
 }
