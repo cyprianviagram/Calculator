@@ -3,17 +3,33 @@ package calculator
 import kotlin.system.exitProcess
 
 fun main() {
-    sumOfIntegersModulus()
+    calculator()
 }
 
-fun sumOfIntegersModulus() {
+fun calculator() {
     when (val userInput = readln()){
-        "" -> sumOfIntegersModulus()
+        "" -> calculator()
         "/exit" -> exit()
         "/help" -> help()
-        else -> sumOfIntegers(userInput)
+        else -> sumOrSubtractionOfIntegers(userInput)
     }
 }
+
+fun sumOrSubtractionOfIntegers(input: String) {
+    val listOfIntegers: List<Long> = input.split("\\s+[+]+\\s+|\\s+-+\\s+".toRegex()).map {it.toLong()}.toList()
+    val listOfOperators = "[+]+|-+".toRegex().findAll(input).map { it.value }.toList()
+    var result = listOfIntegers[0]
+    val droppedListOfIntegers = listOfIntegers.drop(1)
+    droppedListOfIntegers.forEach loop@{i ->
+        val indexOfI = droppedListOfIntegers.indexOf(i)
+        if (listOfOperators[indexOfI].contains("+") || listOfOperators[indexOfI].contains("--")) {
+            result += i
+        } else result -= i
+    }
+    println(result)
+    calculator()
+}
+
 
 fun exit() {
     println("Bye!")
@@ -22,11 +38,5 @@ fun exit() {
 
 fun help() {
     println("The program calculates the sum of numbers")
-    sumOfIntegersModulus()
-}
-
-fun sumOfIntegers(input: String) {
-    val listOfIntegers = input.split(" ").map {it.toLong()}.toList()
-    println(listOfIntegers.sum())
-    sumOfIntegersModulus()
+    calculator()
 }
