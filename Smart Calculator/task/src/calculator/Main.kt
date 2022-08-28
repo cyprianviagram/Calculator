@@ -7,18 +7,23 @@ fun main() {
 }
 
 fun calculator() {
-    when (val userInput = readln()){
-        "" -> calculator()
-        "/exit" -> exit()
-        "/help" -> help()
+    val invalidExpression = "(\\s*([+]|-)?\\d+)+(\\s+([+]+|-+)\\s+-?\\d+)*".toRegex()
+    val userInput = readln()
+    when {
+        userInput == "" -> calculator()
+        userInput == "/exit" -> exit()
+        userInput == "/help" -> help()
+        !userInput.matches(invalidExpression) -> {
+            if (userInput[0] == '/') println("Unknown command") else println("Invalid expression")
+            calculator()
+        }
         else -> sumOrSubtractionOfIntegers(userInput)
     }
 }
 
 fun sumOrSubtractionOfIntegers(input: String) {
     try {
-        input.trim().toLong()
-        println(input.trim())
+        println(input.trim().toLong())
     } catch (e: Exception) {
         var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
             input.substringBefore(" +").trim().toLong()
