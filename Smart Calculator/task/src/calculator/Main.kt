@@ -2,22 +2,49 @@ package calculator
 
 import kotlin.system.exitProcess
 
+enum class RegexValidation(val regex: Regex) {
+    IS_ASSIGNMENT("[A-Za-z]+\\w*(\\s*=*(\\s*(-?\\w+)))*".toRegex()),
+    IS_COMMAND("\\/.+".toRegex()),
+    VALID_EXPRESSION("(([+]|-)?\\d+)+(\\s+([+]+|-+)\\s+-?\\d+)*".toRegex()),
+    VALID_ASSIGNMENT("[A-Za-z]+\\s*=\\s*(-?\\d+|[A-Za-z]+)".toRegex())
+}
+
 fun main() {
     calculator()
 }
 
 fun calculator() {
-    val invalidExpression = "(\\s*([+]|-)?\\d+)+(\\s+([+]+|-+)\\s+-?\\d+)*".toRegex()
+    val mapOfVariables = mutableMapOf<String, Long>()
+    val isAssignment = "[A-Za-z]+\\w*(\\s*=*(\\s*(-?\\w+)))*".toRegex()
+    val validExpression = "(([+]|-)?\\d+)+(\\s+([+]+|-+)\\s+-?\\d+)*".toRegex()
+    val isCommand = "\\/.+".toRegex()
     val userInput = readln()
     when {
-        userInput == "" -> calculator()
-        userInput == "/exit" -> exit()
-        userInput == "/help" -> help()
-        !userInput.matches(invalidExpression) -> {
-            if (userInput[0] == '/') println("Unknown command") else println("Invalid expression")
+        userInput.trim().matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtractionOfIntegers(userInput)
+        userInput.trim().matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
+        userInput.trim().matches(RegexValidation.IS_ASSIGNMENT.regex) -> assignmentProcessor(userInput, mapOfVariables)
+        userInput.trim() == "" -> calculator()
+        else -> {
+            println("Invalid expression")
             calculator()
         }
-        else -> sumOrSubtractionOfIntegers(userInput)
+    }
+}
+
+fun assignmentProcessor(input: String, map: MutableMap<String, Long>) {
+    val validAssignment = "[A-Za-z]+\\s*=\\s*(-?\\d+|[A-Za-z]+)".toRegex()
+    val leftPartOfAssignment = input.substringBefore("=")
+    print(leftPartOfAssignment)
+}
+
+fun commandProcessor(input: String) {
+    when (input) {
+        "/help" -> help()
+        "/exit" -> exit()
+        else -> {
+            ("Unknown command")
+            calculator()
+        }
     }
 }
 
