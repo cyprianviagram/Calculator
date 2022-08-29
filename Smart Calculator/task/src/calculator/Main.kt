@@ -125,11 +125,15 @@ fun exit() {
 
 fun help() {
     println("""
-        The program calculates a sum and a subtraction of numbers. 
-        Enter two or more numbers with plus operator (" + ") or minus operator (" - ") between the numbers with spaces before and after the operator.
+        The program also can store variables.
+        Enter a name of variable (only latin letters) plus operator (" = ") plus an integer or another previously declared variable.
+            Valid declarations: a = 1, b = 2, m=3, big = 3, BIG = 33, a = b (if previously declared)
+            Invalid declarations: a1 = 3, a = a2, a = b = c, a = 8 = c
+        The program calculates a sum and a subtraction of numbers or variables. 
+        Enter two or more numbers or variables with plus operator (" + ") or minus operator (" - ") between the numbers or variables with spaces before and after the operator.
             Any even number of minus operators results in addition. Any odd number of minus operators results in subtraction
             For negative numbers do not put space after minus operator.
-            Enter /help to display these instructions.
-            Enter /exit to shut down the program.
+        Enter /help to display these instructions.
+        Enter /exit to shut down the program.
         """.trimIndent())
 }
