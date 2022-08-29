@@ -15,12 +15,12 @@ fun main() {
 fun calculator() {
     val mapOfVariables = mutableMapOf<String, Long>()
     while(true) {
-        val userInput = readln()
+        val userInput = readln().trim()
         when {
-            userInput.trim().matches(RegexValidation.IS_ASSIGNMENT.regex) -> assignmentProcessor(userInput, mapOfVariables)
-            userInput.trim().matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtraction(userInput)
-            userInput.trim().matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
-            userInput.trim() == "" -> calculator()
+            userInput.matches(RegexValidation.IS_ASSIGNMENT.regex) -> assignmentProcessor(userInput, mapOfVariables)
+            userInput.matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtraction(userInput, mapOfVariables)
+            userInput.matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
+            userInput == "" -> calculator()
             else -> {
                 println("Invalid expression")
             }
@@ -54,7 +54,7 @@ fun assignVariable (leftPart: String, rightPart: String, map: MutableMap<String,
    }
 }
 fun commandProcessor(input: String) {
-    when (input) {
+    when (input.lowercase()) {
         "/help" -> help()
         "/exit" -> exit()
         else -> {
@@ -63,15 +63,21 @@ fun commandProcessor(input: String) {
     }
 }
 
-fun sumOrSubtraction(input: String) {
+fun sumOrSubtraction(input: String, map: MutableMap<String, Long>) {
+    val input = try {
+        replaceVariablesToIntegers(input, map)
+    } catch (e: Exception) {
+        println("Invalid expression")
+        return
+    }
     try {
-        println(input.trim().toLong())
+        println(input.toLong())
     } catch (e: Exception) {
         var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
             input.substringBefore(" +").trim().toLong()
         } else input.substringBefore(" -").trim().toLong()
 
-        val processedInput = inputProcessor(input).replace(result.toString(), "")
+        val processedInput = inputProcessor(input).replaceFirst(result.toString(), "")
 
         val listOfOperators = "[+]|-".toRegex().findAll(processedInput).map { it.value }.toList()
         val processedInputWithoutOperator = processedInput.replace("[+]|-".toRegex(), " ").trim()
@@ -83,6 +89,21 @@ fun sumOrSubtraction(input: String) {
             counter++
         }
         println(result)
+    }
+}
+
+fun replaceVariablesToIntegers (input: String, map: MutableMap<String, Long>): String {
+    var input = input
+    return if (input.contains("[A-Za-z]+".toRegex())) {
+        val variables = "[A-Za-z]+".toRegex().findAll(input)
+        val listOfVariables = variables.map {it.value}.toList()
+        // println(listOfVariables)
+        listOfVariables.forEach {
+            input = input.replace(it, map[it]!!.toString())
+        }
+        return input
+    } else {
+        input
     }
 }
 
@@ -109,6 +130,6 @@ fun help() {
             Any even number of minus operators results in addition. Any odd number of minus operators results in subtraction
             For negative numbers do not put space after minus operator.
             Enter /help to display these instructions.
-            Enter /exit to quit program.
+            Enter /exit to shut down the program.
         """.trimIndent())
 }
