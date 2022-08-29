@@ -3,10 +3,9 @@ package calculator
 import kotlin.system.exitProcess
 
 enum class RegexValidation(val regex: Regex) {
-    IS_ASSIGNMENT("[A-Za-z]+\\w*(\\s*=*(\\s*(-?\\w+)))*".toRegex()),
-    IS_COMMAND("\\/.+".toRegex()),
+    IS_ASSIGNMENT("[A-Za-z]+(\\w*(\\s*=*(\\s*(-?\\w+)*)))*".toRegex()),
+    IS_COMMAND("/.+".toRegex()),
     VALID_EXPRESSION("(([+]|-)?\\d+)+(\\s+([+]+|-+)\\s+-?\\d+)*".toRegex()),
-    VALID_ASSIGNMENT("[A-Za-z]+\\s*=\\s*(-?\\d+|[A-Za-z]+)".toRegex())
 }
 
 fun main() {
@@ -15,35 +14,51 @@ fun main() {
 
 fun calculator() {
     val mapOfVariables = mutableMapOf<String, Long>()
-    val isAssignment = "[A-Za-z]+\\w*(\\s*=*(\\s*(-?\\w+)))*".toRegex()
-    val validExpression = "(([+]|-)?\\d+)+(\\s+([+]+|-+)\\s+-?\\d+)*".toRegex()
-    val isCommand = "\\/.+".toRegex()
-    val userInput = readln()
-    when {
-        userInput.trim().matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtractionOfIntegers(userInput)
-        userInput.trim().matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
-        userInput.trim().matches(RegexValidation.IS_ASSIGNMENT.regex) -> assignmentProcessor(userInput, mapOfVariables)
-        userInput.trim() == "" -> calculator()
-        else -> {
-            println("Invalid expression")
-            calculator()
+    while(true) {
+        val userInput = readln()
+        when {
+            userInput.trim().matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtractionOfIntegers(userInput)
+            userInput.trim().matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
+            userInput.trim().matches(RegexValidation.IS_ASSIGNMENT.regex) -> assignmentProcessor(userInput, mapOfVariables)
+            userInput.trim() == "" -> calculator()
+            else -> {
+                println("Invalid expression")
+            }
         }
     }
 }
 
 fun assignmentProcessor(input: String, map: MutableMap<String, Long>) {
-    val validAssignment = "[A-Za-z]+\\s*=\\s*(-?\\d+|[A-Za-z]+)".toRegex()
-    val leftPartOfAssignment = input.substringBefore("=")
-    print(leftPartOfAssignment)
+    val leftPartOfAssignment = input.substringBefore("=").trim()
+    val rightPartOfAssignment = input.substringAfter("=", "").trim()
+    when {
+        leftPartOfAssignment.contains("\\d".toRegex()) -> {
+            println("Invalid identifier")
+        }
+        rightPartOfAssignment.contains("=".toRegex()) || rightPartOfAssignment.contains("\\d+[A-Za-z]+".toRegex()) -> {
+            println("Invalid assignment")
+        }
+        else -> assignVariable(leftPartOfAssignment, rightPartOfAssignment, map)
+    }
 }
 
+fun assignVariable (leftPart: String, rightPart: String, map: MutableMap<String, Long>) {
+   try {
+       when {
+           map.contains(leftPart) && rightPart == "" -> println(map[leftPart])
+           rightPart.contains("\\D".toRegex()) -> map[leftPart] = map[rightPart]!!
+           else -> map[leftPart] = rightPart.toLong()
+        }
+   } catch (e: Exception) {
+       println("Unknown variable")
+   }
+}
 fun commandProcessor(input: String) {
     when (input) {
         "/help" -> help()
         "/exit" -> exit()
         else -> {
-            ("Unknown command")
-            calculator()
+            println("Unknown command")
         }
     }
 }
@@ -69,7 +84,6 @@ fun sumOrSubtractionOfIntegers(input: String) {
         }
         println(result)
     }
-    calculator()
 }
 
 fun inputProcessor (input: String): String {
@@ -97,5 +111,4 @@ fun help() {
             Enter /help to display these instructions.
             Enter /exit to quit program.
         """.trimIndent())
-    calculator()
 }
