@@ -5,7 +5,7 @@ import kotlin.system.exitProcess
 enum class RegexValidation(val regex: Regex) {
     IS_ASSIGNMENT("[A-Za-z]+(\\w*(\\s*=*(\\s*(-?\\w+)*)))*".toRegex()),
     IS_COMMAND("/.+".toRegex()),
-    VALID_EXPRESSION("(([+]|-)?\\d+)+(\\s+([+]+|-+)\\s+-?\\d+)*".toRegex()),
+    VALID_EXPRESSION("(([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+)\\s+-?((\\d+)|[A-Za-z]+))*".toRegex()),
 }
 
 fun main() {
@@ -17,9 +17,9 @@ fun calculator() {
     while(true) {
         val userInput = readln()
         when {
-            userInput.trim().matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtractionOfIntegers(userInput)
-            userInput.trim().matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
             userInput.trim().matches(RegexValidation.IS_ASSIGNMENT.regex) -> assignmentProcessor(userInput, mapOfVariables)
+            userInput.trim().matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtraction(userInput)
+            userInput.trim().matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
             userInput.trim() == "" -> calculator()
             else -> {
                 println("Invalid expression")
@@ -63,7 +63,7 @@ fun commandProcessor(input: String) {
     }
 }
 
-fun sumOrSubtractionOfIntegers(input: String) {
+fun sumOrSubtraction(input: String) {
     try {
         println(input.trim().toLong())
     } catch (e: Exception) {
