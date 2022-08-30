@@ -5,7 +5,7 @@ import kotlin.system.exitProcess
 enum class RegexValidation(val regex: Regex) {
     IS_ASSIGNMENT("[A-Za-z]+(\\w*(\\s*=*(\\s*(-?\\w+)*)))*".toRegex()),
     IS_COMMAND("/.+".toRegex()),
-    VALID_EXPRESSION("(([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+)\\s+-?((\\d+)|[A-Za-z]+))*".toRegex()),
+    VALID_EXPRESSION("(([()])*([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+|\\*|/)\\s+([()])*-?((\\d+)|[A-Za-z]+)([()])*)*".toRegex()),
 }
 
 fun main() {
