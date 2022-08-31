@@ -1,8 +1,5 @@
 package calculator
-
-import java.util.Deque
-import java.util.LinkedList
-import java.util.Queue
+import java.util.Stack
 import kotlin.system.exitProcess
 
 enum class RegexValidation(val regex: Regex) {
@@ -10,6 +7,14 @@ enum class RegexValidation(val regex: Regex) {
     IS_COMMAND("/.+".toRegex()),
     IS_EXPRESSION("(([(])*([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+|\\*|/|\\^)\\s+([(])*-?((\\d+)|[A-Za-z]+)([)])*)*".toRegex()),
 }
+
+val operatorsValues = mapOf<String, Int> (
+    "+" to 1,
+    "-" to 1,
+    "*" to 2,
+    "/" to 2,
+    "^" to 3
+        )
 
 fun main() {
     calculator()
@@ -77,8 +82,8 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
         try {
             println(input.toLong())
         } catch (e: Exception) {
-            //val postfixExpression = infixToPostfix(inputProcessor(input))
-
+            val postfixExpression = infixToPostfix(inputProcessor(input).split(" ").map { it }.toList())
+            //println(postfixExpression)
             /*var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
                 input.substringBefore(" +").trim().toLong()
             } else input.substringBefore(" -").trim().toLong()
@@ -99,10 +104,37 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
     } else println("Invalid expression")
 }
 
-/*fun infixToPostfix (input: String): String {
-    val stack: Queue<String> = LinkedList<String>()
-
-}*/
+fun infixToPostfix (list: List<String>): String {
+    val stack = Stack<String>()
+    val postfixExpression = StringBuilder()
+    list.forEach {
+        when {
+            it.contains("\\d".toRegex()) -> postfixExpression.append(it)
+            it == "(" -> stack.add(it)
+            it == ")" -> {
+                while (stack.last() != "(") {
+                    postfixExpression.append(stack.last())
+                    stack.pop()
+                }
+                stack.pop()
+            }
+            stack.isEmpty() || stack.last() == "(" -> stack.push(it)
+            operatorsValues[it]!! > operatorsValues[stack.last()]!! -> stack.push(it)
+            operatorsValues[it]!! <= operatorsValues[stack.last()]!! -> {
+                while (stack.isNotEmpty() && (operatorsValues[it]!! <= operatorsValues[stack.last()]!! || stack.last() != "(" )) {
+                    postfixExpression.append(stack.last())
+                    stack.pop()
+                }
+                stack.push(it)
+            }
+        }
+    }
+    while (stack.isNotEmpty()) {
+        postfixExpression.append(stack.last())
+        stack.pop()
+    }
+    return postfixExpression.toString()
+}
 
 fun parenthesesValidator (input: String): Boolean {
     val onlyParentheses = input.replace("[^()]".toRegex(), "")
@@ -128,7 +160,9 @@ fun replaceVariablesToIntegers (input: String, map: MutableMap<String, Long>): S
 
 fun inputProcessor (input: String): String {
     return input.replace(
-        "\\s+".toRegex(), ""
+        "\\(".toRegex(), "( "
+    ).replace(
+        "\\)".toRegex(), " )"
     ).replace(
         "--".toRegex(), "+"
     ).replace(
