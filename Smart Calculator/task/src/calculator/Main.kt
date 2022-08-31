@@ -83,7 +83,7 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
             println(input.toLong())
         } catch (e: Exception) {
             val postfixExpression = infixToPostfix(inputProcessor(input).split(" ").map { it }.toList())
-            //println(postfixExpression)
+            println(postfixExpression.joinToString(" "))
             /*var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
                 input.substringBefore(" +").trim().toLong()
             } else input.substringBefore(" -").trim().toLong()
@@ -104,16 +104,16 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
     } else println("Invalid expression")
 }
 
-fun infixToPostfix (list: List<String>): String {
+fun infixToPostfix (list: List<String>): List<String> {
     val stack = Stack<String>()
-    val postfixExpression = StringBuilder()
+    val postfixExpression = mutableListOf<String>()
     list.forEach {
         when {
-            it.contains("\\d".toRegex()) -> postfixExpression.append(it)
+            it.contains("\\d".toRegex()) -> postfixExpression.add(it)
             it == "(" -> stack.add(it)
             it == ")" -> {
                 while (stack.last() != "(") {
-                    postfixExpression.append(stack.last())
+                    postfixExpression.add(stack.last())
                     stack.pop()
                 }
                 stack.pop()
@@ -122,7 +122,7 @@ fun infixToPostfix (list: List<String>): String {
             operatorsValues[it]!! > operatorsValues[stack.last()]!! -> stack.push(it)
             operatorsValues[it]!! <= operatorsValues[stack.last()]!! -> {
                 while (stack.isNotEmpty() && (operatorsValues[it]!! <= operatorsValues[stack.last()]!! || stack.last() != "(" )) {
-                    postfixExpression.append(stack.last())
+                    postfixExpression.add(stack.last())
                     stack.pop()
                 }
                 stack.push(it)
@@ -130,10 +130,10 @@ fun infixToPostfix (list: List<String>): String {
         }
     }
     while (stack.isNotEmpty()) {
-        postfixExpression.append(stack.last())
+        postfixExpression.add(stack.last())
         stack.pop()
     }
-    return postfixExpression.toString()
+    return postfixExpression.toList()
 }
 
 fun parenthesesValidator (input: String): Boolean {
