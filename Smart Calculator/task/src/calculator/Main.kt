@@ -5,7 +5,7 @@ import kotlin.system.exitProcess
 enum class RegexValidation(val regex: Regex) {
     IS_ASSIGNMENT("[A-Za-z]+(\\w*(\\s*=*(\\s*(-?\\w+)*)))*".toRegex()),
     IS_COMMAND("/.+".toRegex()),
-    VALID_EXPRESSION("(([()])*([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+|\\*|/)\\s+([()])*-?((\\d+)|[A-Za-z]+)([()])*)*".toRegex()),
+    IS_EXPRESSION("(([(])*([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+|\\*|/)\\s+([(])*-?((\\d+)|[A-Za-z]+)([)])*)*".toRegex()),
 }
 
 fun main() {
@@ -18,7 +18,7 @@ fun calculator() {
         val userInput = readln().trim()
         when {
             userInput.matches(RegexValidation.IS_ASSIGNMENT.regex) -> assignmentProcessor(userInput, mapOfVariables)
-            userInput.matches(RegexValidation.VALID_EXPRESSION.regex) -> sumOrSubtraction(userInput, mapOfVariables)
+            userInput.matches(RegexValidation.IS_EXPRESSION.regex) -> expressionProcessor(userInput, mapOfVariables)
             userInput.matches(RegexValidation.IS_COMMAND.regex) -> commandProcessor(userInput)
             userInput == "" -> calculator()
             else -> {
@@ -63,33 +63,43 @@ fun commandProcessor(input: String) {
     }
 }
 
-fun sumOrSubtraction(input: String, map: MutableMap<String, Long>) {
+fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
     val input = try {
         replaceVariablesToIntegers(input, map)
     } catch (e: Exception) {
         println("Invalid expression")
         return
     }
-    try {
-        println(input.toLong())
-    } catch (e: Exception) {
-        var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
-            input.substringBefore(" +").trim().toLong()
-        } else input.substringBefore(" -").trim().toLong()
+    if (parenthesesValidator(input)) {
+        try {
+            println(input.toLong())
+        } catch (e: Exception) {
+            val processedInput = inputProcessor(input)
+            /*var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
+                input.substringBefore(" +").trim().toLong()
+            } else input.substringBefore(" -").trim().toLong()
 
-        val processedInput = inputProcessor(input).replaceFirst(result.toString(), "")
+            val processedInput = inputProcessor(input).replaceFirst(result.toString(), "")
 
-        val listOfOperators = "[+]|-".toRegex().findAll(processedInput).map { it.value }.toList()
-        val processedInputWithoutOperator = processedInput.replace("[+]|-".toRegex(), " ").trim()
-        val listOfIntegers: List<Long> = processedInputWithoutOperator.split(" ").map { it.toLong() }.toList()
+            val listOfOperators = "[+]|-".toRegex().findAll(processedInput).map { it.value }.toList()
+            val processedInputWithoutOperator = processedInput.replace("[+]|-".toRegex(), " ").trim()
+            val listOfIntegers: List<Long> = processedInputWithoutOperator.split(" ").map { it.toLong() }.toList()
 
-        var counter = 0
-        listOfIntegers.forEach {
-            if (listOfOperators[counter] == "+") result += it else result -= it
-            counter++
+            var counter = 0
+            listOfIntegers.forEach {
+                if (listOfOperators[counter] == "+") result += it else result -= it
+                counter++
+            }
+            println(result)*/
         }
-        println(result)
-    }
+    } else println("Invalid expression")
+}
+
+fun parenthesesValidator (input: String): Boolean {
+    val onlyParentheses = input.replace("[^()]".toRegex(), "")
+    val numberOfLeftParenthesis = onlyParentheses.count { it == '(' }
+    val numberOfRightParenthesis = onlyParentheses.count { it == ')'}
+    return numberOfLeftParenthesis == numberOfRightParenthesis
 }
 
 fun replaceVariablesToIntegers (input: String, map: MutableMap<String, Long>): String {
