@@ -1,11 +1,14 @@
 package calculator
 
+import java.util.Deque
+import java.util.LinkedList
+import java.util.Queue
 import kotlin.system.exitProcess
 
 enum class RegexValidation(val regex: Regex) {
     IS_ASSIGNMENT("[A-Za-z]+(\\w*(\\s*=*(\\s*(-?\\w+)*)))*".toRegex()),
     IS_COMMAND("/.+".toRegex()),
-    IS_EXPRESSION("(([(])*([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+|\\*|/)\\s+([(])*-?((\\d+)|[A-Za-z]+)([)])*)*".toRegex()),
+    IS_EXPRESSION("(([(])*([+]|-)?(\\d+)|[A-Za-z]+)+(\\s+([+]+|-+|\\*|/|\\^)\\s+([(])*-?((\\d+)|[A-Za-z]+)([)])*)*".toRegex()),
 }
 
 fun main() {
@@ -74,7 +77,8 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
         try {
             println(input.toLong())
         } catch (e: Exception) {
-            val processedInput = inputProcessor(input)
+            //val postfixExpression = infixToPostfix(inputProcessor(input))
+
             /*var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
                 input.substringBefore(" +").trim().toLong()
             } else input.substringBefore(" -").trim().toLong()
@@ -94,6 +98,11 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
         }
     } else println("Invalid expression")
 }
+
+/*fun infixToPostfix (input: String): String {
+    val stack: Queue<String> = LinkedList<String>()
+
+}*/
 
 fun parenthesesValidator (input: String): Boolean {
     val onlyParentheses = input.replace("[^()]".toRegex(), "")
@@ -128,11 +137,6 @@ fun inputProcessor (input: String): String {
         "[+]-+".toRegex(), "-")
 }
 
-fun exit() {
-    println("Bye!")
-    exitProcess(0)
-}
-
 fun help() {
     println("""
         The program also can store variables.
@@ -147,3 +151,9 @@ fun help() {
         Enter /exit to shut down the program.
         """.trimIndent())
 }
+
+fun exit() {
+    println("Bye!")
+    exitProcess(0)
+}
+
