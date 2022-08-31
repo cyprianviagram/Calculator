@@ -83,7 +83,7 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
             println(input.toLong())
         } catch (e: Exception) {
             val postfixExpression = infixToPostfix(inputProcessor(input).split(" ").map { it }.toList())
-            println(postfixExpression.joinToString(" "))
+            //println(postfixExpression.joinToString(" "))
             /*var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
                 input.substringBefore(" +").trim().toLong()
             } else input.substringBefore(" -").trim().toLong()
