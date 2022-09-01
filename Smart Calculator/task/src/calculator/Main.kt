@@ -10,6 +10,8 @@ enum class RegexValidation(val regex: Regex) {
 }
 
 val operatorsValues = mapOf<String, Int> (
+    "(" to 0,
+    ")" to 0,
     "+" to 1,
     "-" to 1,
     "*" to 2,
@@ -108,7 +110,7 @@ fun infixToPostfix (infixList: List<String>): List<String> {
             stack.isEmpty() || stack.last() == "(" -> stack.push(it)
             operatorsValues[it]!! > operatorsValues[stack.last()]!! -> stack.push(it)
             operatorsValues[it]!! <= operatorsValues[stack.last()]!! -> {
-                while (stack.isNotEmpty() && (operatorsValues[it]!! <= operatorsValues[stack.last()]!! || stack.last() != "(" )) {
+                while (stack.isNotEmpty() && (operatorsValues[it]!! <= (operatorsValues[stack.last()]!!)|| stack.last() != "(" )) {
                     postfixExpression.add(stack.last())
                     stack.pop()
                 }
