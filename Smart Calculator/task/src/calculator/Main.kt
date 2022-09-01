@@ -1,5 +1,4 @@
 package calculator
-import java.lang.Double.sum
 import java.util.Stack
 import kotlin.math.pow
 import kotlin.system.exitProcess
@@ -56,9 +55,11 @@ fun assignVariable (leftPart: String, rightPart: String, map: MutableMap<String,
    try {
        when {
            map.contains(leftPart) && rightPart == "" -> println(map[leftPart])
-           rightPart.contains("\\D".toRegex()) -> map[leftPart] = map[rightPart]!!
-           else -> map[leftPart] = rightPart.toLong()
-        }
+           rightPart.contains("[^-]\\D".toRegex()) -> map[leftPart] = map[rightPart]!!
+           else -> {
+               map[leftPart] = rightPart.toLong()
+           }
+       }
    } catch (e: Exception) {
        println("Unknown variable")
    }
