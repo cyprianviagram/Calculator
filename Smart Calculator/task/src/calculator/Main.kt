@@ -55,7 +55,7 @@ fun assignVariable (leftPart: String, rightPart: String, map: MutableMap<String,
    try {
        when {
            map.contains(leftPart) && rightPart == "" -> println(map[leftPart])
-           rightPart.contains("[^-]\\D".toRegex()) -> map[leftPart] = map[rightPart]!!
+           rightPart.matches("([^-])?(\\D)+".toRegex()) -> map[leftPart] = map[rightPart]!!
            else -> {
                map[leftPart] = rightPart.toLong()
            }
@@ -86,7 +86,7 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
             println(input.toLong())
         } catch (e: Exception) {
             val postfixExpression = infixToPostfix(inputProcessor(input).split(" ").map { it }.toList())
-            println(postfixToResult(postfixExpression))
+            println(postfixToResult(postfixExpression).toDouble().toLong())
         }
     } else println("Invalid expression")
 }
