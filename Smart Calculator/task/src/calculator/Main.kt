@@ -1,5 +1,7 @@
 package calculator
+import java.lang.Double.sum
 import java.util.Stack
+import kotlin.math.pow
 import kotlin.system.exitProcess
 
 enum class RegexValidation(val regex: Regex) {
@@ -83,31 +85,15 @@ fun expressionProcessor(input: String, map: MutableMap<String, Long>) {
             println(input.toLong())
         } catch (e: Exception) {
             val postfixExpression = infixToPostfix(inputProcessor(input).split(" ").map { it }.toList())
-            //println(postfixExpression.joinToString(" "))
-            /*var result: Long = if (input.substringBefore(" +").length < input.substringBefore(" -").length) {
-                input.substringBefore(" +").trim().toLong()
-            } else input.substringBefore(" -").trim().toLong()
-
-            val processedInput = inputProcessor(input).replaceFirst(result.toString(), "")
-
-            val listOfOperators = "[+]|-".toRegex().findAll(processedInput).map { it.value }.toList()
-            val processedInputWithoutOperator = processedInput.replace("[+]|-".toRegex(), " ").trim()
-            val listOfIntegers: List<Long> = processedInputWithoutOperator.split(" ").map { it.toLong() }.toList()
-
-            var counter = 0
-            listOfIntegers.forEach {
-                if (listOfOperators[counter] == "+") result += it else result -= it
-                counter++
-            }
-            println(result)*/
+            println(postfixToResult(postfixExpression))
         }
     } else println("Invalid expression")
 }
 
-fun infixToPostfix (list: List<String>): List<String> {
+fun infixToPostfix (infixList: List<String>): List<String> {
     val stack = Stack<String>()
     val postfixExpression = mutableListOf<String>()
-    list.forEach {
+    infixList.forEach {
         when {
             it.contains("\\d".toRegex()) -> postfixExpression.add(it)
             it == "(" -> stack.add(it)
@@ -134,6 +120,36 @@ fun infixToPostfix (list: List<String>): List<String> {
         stack.pop()
     }
     return postfixExpression.toList()
+}
+
+fun postfixToResult(postfixList: List<String>): String {
+    val stack = Stack<String>()
+    var result: String
+    postfixList.forEach {
+        when {
+            it.contains("\\d+".toRegex()) -> stack.push(it)
+            else -> {
+                result = operationProcessor(stack, it)
+                stack.pop()
+                stack.push(result)
+            }
+        }
+    }
+    return stack.pop()
+}
+
+fun operationProcessor (stack: Stack<String>, operator: String): String {
+    val b = stack.last().toDouble()
+    stack.pop()
+    val a = stack.last().toDouble()
+    return when (operator) {
+        "+" -> (a + b).toString()
+        "-" -> (a - b).toString()
+        "/" -> (a / b).toString()
+        "*" -> (a * b).toString()
+        "^" -> a.pow(b).toString()
+        else -> null.toString()
+    }
 }
 
 fun parenthesesValidator (input: String): Boolean {
